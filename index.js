@@ -59,11 +59,33 @@ async function scrapeProducts() {
 }
 
 app.get('/getProducts', async (req, res) => {
+    const targetUrl = req.query.targetUrl;
+
     try {
         const products = await scrapeProducts();
-        res.json(products);
+        
+        if (targetUrl) {
+            // Send the products data to the specified URL
+            const response = await fetch(targetUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(products),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to send data to ${targetUrl}`);
+            }
+
+            res.json({ message: 'Products scraped and sent successfully', count: products.length });
+        } else {
+            // If no targetUrl is provided, return the products JSON directly
+            res.json(products);
+        }
     } catch (error) {
-        res.status(500).json({ error: 'An error occurred while scraping products' });
+        console.error('Error:', error);
+        res.status(500).json({ error: 'An error occurred while processing the request' });
     }
 });
 
