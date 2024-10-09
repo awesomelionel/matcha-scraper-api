@@ -89,6 +89,12 @@ app.get('/getProducts', async (req, res) => {
     }
 });
 
+app.post('/receive-data', (req, res) => {
+    console.log('Received data:');
+    console.log(JSON.stringify(req.body, null, 2));
+    res.json({ message: 'Data received successfully' });
+});
+
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
